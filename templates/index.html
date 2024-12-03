@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secretos Anónimos</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Barra de navegación -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">Secretos Anónimos</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Inicio</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('populares') }}">Secretos Populares</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h1 class="text-center">Bienvenidos a Secretos Anónimos</h1>
+        
+        <!-- Formulario para agregar un nuevo secreto -->
+        <form method="POST" class="mb-4">
+            <div class="form-group">
+                <textarea name="contenido" class="form-control" placeholder="Escribe tu secreto aquí..." required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="categoria">Categoría:</label>
+                <select name="categoria" class="form-control" required>
+                    <option value="Trabajo">Trabajo</option>
+                    <option value="Relaciones">Relaciones</option>
+                    <option value="Estudios">Estudios</option>
+                    <option value="Familia">Familia</option>
+                    <option value="Otros">Otros</option>
+                </select>
+            </div>
+            <button id="enviar" type="submit" class="btn btn-primary">Enviar</button>
+        </form>
+
+        <!-- Barra de búsqueda -->
+        <form method="GET" action="/" class="mb-4">
+            <div class="form-group">
+                <input type="text" name="search" class="form-control" placeholder="Buscar secretos..." value="{{ request.args.get('search', '') }}">
+            </div>
+            <button type="submit" class="btn btn-info">Buscar</button>
+        </form>
+
+        <h2>Secretos Anónimos</h2>
+        <ul class="list-group">
+            {% for secreto in secretos %}
+                <!-- Solo mostrar secretos aprobados -->
+                {% if secreto.aprobado %}
+                    <li class="list-group-item">
+                        <strong>{{ secreto.categoria }}</strong>: {{ secreto.contenido }} 
+                        (Likes: {{ secreto.likes }} | Loves: {{ secreto.loves }})
+                        <a href="{{ url_for('like_secreto', id=secreto.id) }}" class="btn btn-sm btn-outline-success">👍 Like</a>
+                        <a href="{{ url_for('love_secreto', id=secreto.id) }}" class="btn btn-sm btn-outline-danger">❤️ Love</a>
+                    </li>
+                {% else %}
+                    <li class="list-group-item">
+                        Este secreto está pendiente de aprobación.
+                        <a href="{{ url_for('aprobar_secreto', id=secreto.id) }}" class="btn btn-sm btn-outline-warning">Aprobar</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Scripts de Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
